@@ -1,9 +1,9 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import type { Env } from "../../env";
-import { apiKeyAuth } from "./middleware/apiKeyAuth";
-import mailboxesRouter from "./routes/mailboxes";
-import { requireOpenApi } from "../../openapi";
+import type { Env } from "../../env.ts";
+import { apiKeyAuth } from "./middleware/apiKeyAuth.ts";
+import mailboxesRouter from "./routes/mailboxes.ts";
+import { requireOpenApi } from "../../openapi.ts";
 
 const v1 = new Hono<{
   Bindings: Env;

@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import type { Env } from "../../../env";
-import { getD1DB } from "../../../database/db";
+import type { Env } from "../../../env.ts";
+import { getD1DB } from "../../../database/db.ts";
 import { nanoid } from "nanoid/non-secure";
 import {
   insertMailbox,
@@ -11,10 +11,10 @@ import {
   deleteMailboxMessage,
   getMailboxMessageCount,
   record,
-} from "../../../database/dao";
+} from "../../../database/dao.ts";
 
-import { isValidLocalPart, normalizeLocalPart } from "../localPart";
-import { generateUniqueLocalPart } from "../randomLocalPart";
+import { isValidLocalPart, normalizeLocalPart } from "../localPart.ts";
+import { generateUniqueLocalPart } from "../randomLocalPart.ts";
 
 const mailboxesRouter = new Hono<{
   Bindings: Env;

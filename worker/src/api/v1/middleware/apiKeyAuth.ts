@@ -1,17 +1,17 @@
-import { Context, Next } from "hono";
-import { getD1DB } from "../../../database/db";
-import type { ApiKey } from "../../../database/schema";
+import type { Context, Next } from "hono";
+import { getD1DB } from "../../../database/db.ts";
+import type { ApiKey } from "../../../database/schema.ts";
 import {
   findApiKeyByKey,
   incrementAndGetApiRateWindowCount,
-} from "../../../database/dao";
-import { record } from "../../../database/stats";
+} from "../../../database/dao.ts";
+import { record } from "../../../database/stats.ts";
 import {
   checkRateLimit,
   createDrizzleRateLimitStore,
   rateLimitHeaders,
-} from "../../../rateLimit";
-import type { Env } from "../../../env";
+} from "../../../rateLimit.ts";
+import type { Env } from "../../../env.ts";
 
 /**
  * API Key 认证中间件

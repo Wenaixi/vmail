@@ -10,15 +10,15 @@ import {
   insertApiKey,
   getSiteStats,
   getMailboxMetaByAddress,
-} from "./database/dao";
-import { getD1DB } from "./database/db";
+} from "./database/dao.ts";
+import { getD1DB } from "./database/db.ts";
 import { nanoid } from "nanoid/non-secure";
 import PostalMime from "postal-mime";
 // 导入加解密工具函数
-import { decrypt } from "./utils";
+import { decrypt } from "./utils.ts";
 // 导入 v1 API
-import v1Api from "./api/v1";
-import { isOpenApiEnabled, requireOpenApi } from "./openapi";
+import v1Api from "./api/v1/index.ts";
+import { isOpenApiEnabled, requireOpenApi } from "./openapi.ts";
 import {
   createMailboxIdentity,
   createMailboxToken,
@@ -27,25 +27,25 @@ import {
   sendEmail,
   sendRequestSchema,
   verifyMailboxToken,
-} from "./sender";
-import { checkRateLimit, createDrizzleRateLimitStore } from "./rateLimit";
-import { incrementAndGetApiRateWindowCount as drizzleIncrementRateWindow } from "./database/dao";
+} from "./sender.ts";
+import { checkRateLimit, createDrizzleRateLimitStore } from "./rateLimit.ts";
+import { incrementAndGetApiRateWindowCount as drizzleIncrementRateWindow } from "./database/dao.ts";
 import {
   isTurnstileEnabled,
   parseJsonBody,
   verifyTurnstileToken,
-} from "./turnstile";
-import type { Env } from "./env";
-export type { Env } from "./env";
+} from "./turnstile.ts";
+import type { Env } from "./env.ts";
+export type { Env } from "./env.ts";
 import {
   SITE_AUTH_COOKIE,
   SITE_GATE_TTL_MS,
   createSiteGateCookieValue,
   isSiteUnlocked,
   shouldBypassSiteGate,
-} from "./app/siteGate";
-import { mapPostalToInsertEmail, type ParsedMail } from "./app/ingestion";
-import { record } from "./database/stats";
+} from "./app/siteGate.ts";
+import { mapPostalToInsertEmail, type ParsedMail } from "./app/ingestion.ts";
+import { record } from "./database/stats.ts";
 
 // Env 来自共享模块，保持单源
 
