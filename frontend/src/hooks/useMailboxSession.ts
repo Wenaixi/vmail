@@ -32,18 +32,6 @@ export const COOKIE_SECURITY_OPTIONS = {
   sameSite: "strict",
 } as const;
 
-export function readMailboxSessionFromCookies(): {
-  address?: string;
-  mailboxToken: string;
-  expiryTimestamp?: number;
-} {
-  const address = Cookies.get(COOKIE_KEYS.mailbox);
-  const mailboxToken = Cookies.get(COOKIE_KEYS.token) || "";
-  const expiryRaw = Cookies.get(COOKIE_KEYS.expiry);
-  const expiryTimestamp = expiryRaw ? parseInt(expiryRaw, 10) : undefined;
-  return { address, mailboxToken, expiryTimestamp };
-}
-
 export function writeMailboxSessionCookies(
   mailbox: string,
   mailboxToken: string | undefined,
