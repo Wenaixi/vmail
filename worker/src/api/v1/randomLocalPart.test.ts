@@ -1,7 +1,9 @@
 import test from "node:test";
+import assert from "node:assert/strict";
 import {
   generateRandomLocalPart,
   generateUniqueLocalPart,
+  MAX_GENERATE_ATTEMPTS,
   RANDOM_SUFFIX_LENGTH,
 } from "./randomLocalPart.ts";
 import { isValidLocalPart } from "./localPart.ts";
@@ -35,6 +37,28 @@ test("CSPRNG 熵检查: 同批次不应出现重复(collision 概率可忽略)",
   for (let i = 0; i < 500; i++) seen.add(generateRandomLocalPart());
   if (seen.size !== 500)
     throw new Error(`出现重复, 抽样 500 去重后 ${seen.size} — 疑似非随机源`);
+});
+
+test("generateUniqueLocalPart 耗尽时抛 LOCAL_PART_EXHAUSTED (调用方映射 409)", async () => {
+  let calls = 0;
+  await assert.rejects(
+    generateUniqueLocalPart(async () => {
+      calls++;
+      return true; // 恒冲突
+    }),
+    { message: "LOCAL_PART_EXHAUSTED" },
+  );
+  if (calls !== MAX_GENERATE_ATTEMPTS)
+    throw new Error(`应探测 ${MAX_GENERATE_ATTEMPTS} 次, 实际 ${calls}`);
+});
+
+test("字典基座 + 分隔点 + 后缀总长不超过 32 (格式闸口零抛错前提)", () => {
+  // CodeRabbit PR#42 CR-2: 基座最长模式 first.lastYY = 5+1+5+2 = 13,
+  // 加 "." 与六位后缀共 20, 上限 32 留有 12 余量 — 该不变量是闸口永不触发的根因
+  for (let i = 0; i < 500; i++) {
+    const v = generateRandomLocalPart();
+    if (v.length > 32) throw new Error(`超长: ${v} (${v.length})`);
+  }
 });
 
 test("exists 恒 false 时一次通过", async () => {

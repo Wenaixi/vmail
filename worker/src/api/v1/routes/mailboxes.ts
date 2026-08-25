@@ -68,16 +68,35 @@ mailboxesRouter.post("/", async (c) => {
 
   // 生成邮箱地址
   // PR#42 CR-2: 随机分支走 CSPRNG 后缀 + 冲突重试; 用户指定分支保持原样(冲突如实 409)
-  const localPart =
-    typeof body.localPart === "string" && body.localPart
-      ? normalizeLocalPart(body.localPart)
-      : await generateUniqueLocalPart(async (candidate) => {
-          const found = await findMailboxByAddress(
-            db,
-            candidate + "@" + domain,
-          );
-          return found !== null;
-        });
+  // CodeRabbit PR#42 CR-2(本轮): 生成调用移入 try — LOCAL_PART_EXHAUSTED 走 409 CONFLICT 信封而非裸 500
+  let localPart: string;
+  try {
+    localPart =
+      typeof body.localPart === "string" && body.localPart
+        ? normalizeLocalPart(body.localPart)
+        : await generateUniqueLocalPart(async (candidate) => {
+            const found = await findMailboxByAddress(
+              db,
+              candidate + "@" + domain,
+            );
+            return found !== null;
+          });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg.includes("LOCAL_PART_EXHAUSTED")) {
+      return c.json(
+        {
+          error: {
+            code: "CONFLICT",
+            message:
+              "Could not generate a unique mailbox address, please try again",
+          },
+        },
+        409,
+      );
+    }
+    throw e;
+  }
   if (!isValidLocalPart(localPart)) {
     return c.json(
       {
