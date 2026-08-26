@@ -36,8 +36,10 @@ mailboxesRouter.post("/", async (c) => {
   }
 
   // 获取可用域名
+  // CodeRabbit PR#42 CR-3: 与用户输入/身份层同款小写归一化，
+  // 否则配置含大写域名时 includes 检查误判合法请求为 400
   const availableDomains = c.env.EMAIL_DOMAIN
-    ? c.env.EMAIL_DOMAIN.split(",").map((d) => d.trim())
+    ? c.env.EMAIL_DOMAIN.split(",").map((d) => d.trim().toLowerCase())
     : [];
   if (availableDomains.length === 0) {
     return c.json(
